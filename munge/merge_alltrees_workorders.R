@@ -29,12 +29,11 @@ names(street.trees) <- c(
     'tree.id',
     'join.field',
     'join.field2',
-    'lon',
-    'lat'
+    'x_lon',
+    'y_lat'
 )
 
 street.trees <- subset(street.trees, select = c(
-    'side',
     'dbh',
     'address',
     'season',
@@ -43,8 +42,8 @@ street.trees <- subset(street.trees, select = c(
     'census',
     'young.tree',
     'tree.id',
-    'lon',
-    'lat'
+    'x_lon',
+    'y_lat'
     ))
 
 street.trees$boro[street.trees$boro==1] <- "Manhattan"
@@ -53,8 +52,8 @@ street.trees$boro[street.trees$boro==3] <- "Brooklyn"
 street.trees$boro[street.trees$boro==4] <- "Queens"
 street.trees$boro[street.trees$boro==5] <- "Staten Island"
 street.trees$boro <- factor(street.trees$boro)
-write.csv(street.trees, "~/Dropbox/GitRepository/ParksDataDive2012/StreetTrees")
-
+write.csv(head(street.trees), "~/Dropbox/GitRepository/ParksDataDive2012/Street_Trees.csv", na="", row.names=F)
+head(street.trees)
 # removals
 work.orders <- read.csv("~/Dropbox/GitRepository/ParksDataDive2012/WorkOrders_NamesCleaned.csv")
 work.orders <- subset(work.orders, WOCATEGORY == 'TREEREMV' & STATUS %in% c("CLOSED", "COMPLETE"), 
