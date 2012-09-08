@@ -9,7 +9,9 @@ library(maps)
 rm(list=ls())
 
 # Load data from Street Trees Census
-street.trees <- read.csv("/data/datakind/Alltrees_20120606.csv")
+street.trees <- read.csv("~/Dropbox/GitRepository/ParksDataDive2012/Alltrees_20120606.csv", 
+                         header=TRUE,
+                         stringsAsFactors=FALSE)
 names(street.trees) <- c(
     'side',
     'address',
@@ -32,6 +34,7 @@ names(street.trees) <- c(
 )
 
 street.trees <- subset(street.trees, select = c(
+    'side',
     'dbh',
     'address',
     'season',
@@ -51,7 +54,7 @@ street.trees$boro[street.trees$boro==4] <- "Queens"
 street.trees$boro[street.trees$boro==5] <- "Staten Island"
 street.trees$boro <- factor(street.trees$boro)
 
-work.orders <- read.csv("/data/datakind/forms/WorkOrders_NamesCleaned.csv")
+work.orders <- read.csv("~/Dropbox/GitRepository/ParksDataDive2012/WorkOrders_NamesCleaned.csv")
 work.orders <- subset(work.orders, WOCATEGORY == 'TREEREMV' & STATUS %in% c("CLOSED", "COMPLETE"), 
                       select = c(
     'WORKORDERID',
@@ -67,7 +70,7 @@ names(work.orders) <- c(
     'y',
     'finish.date',
     'status',
-    'species'
+    'species2'
     )
 
 
@@ -76,4 +79,7 @@ street.trees$dataset = "streettrees"
 
 
 combined <- rbind.fill(work.orders, street.trees)
-write.csv(combined, file='/data/datakind/StreetTrees_WorkOrders.csv', na="", row.names=FALSE)
+write.csv(combined, file='~/Dropbox/GitRepository/ParksDataDive2012/StreetTrees_WorkOrders.csv', na="", row.names=FALSE)
+#species2 crossover
+crossover = data.frame(species2 = combined$species2, work.order.id = combined$work.order.id)
+write.csv(crossover, file='~/Dropbox/GitRepository/ParksDataDive2012/crossover.csv', na="", row.names=FALSE)
