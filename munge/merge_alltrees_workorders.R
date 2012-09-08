@@ -58,14 +58,16 @@ work.orders <- subset(work.orders, WOCATEGORY == 'TREEREMV' & STATUS %in% c("CLO
     'WOXCOORDINATE',
     'WOYCOORDINATE',
     'ACTUALFINISHDATE',
-    'STATUS' # CLOSED, COMPLETE
+    'STATUS', # CLOSED, COMPLETE
+    'Text8'
     ))
 names(work.orders) <- c(
     'work.order.id',
     'x',
     'y',
     'finish.date',
-    'status'
+    'status',
+    'species'
     )
 
 
