@@ -52,7 +52,7 @@ street.trees$boro[street.trees$boro==3] <- "Brooklyn"
 street.trees$boro[street.trees$boro==4] <- "Queens"
 street.trees$boro[street.trees$boro==5] <- "Staten Island"
 street.trees$boro <- factor(street.trees$boro)
-write.csv(head(street.trees), "~/Dropbox/GitRepository/ParksDataDive2012/Street_Trees.csv", na="", row.names=F)
+write.csv(street.trees, "~/Dropbox/GitRepository/ParksDataDive2012/Street_Trees.csv", na="", row.names=F)
 head(street.trees)
 # removals
 work.orders <- read.csv("~/Dropbox/GitRepository/ParksDataDive2012/WorkOrders_NamesCleaned.csv")
