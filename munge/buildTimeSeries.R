@@ -55,10 +55,10 @@ setwd("~/Dropbox/GitRepository/ParksDataDive2012/")
 	rm = rm[which(rm$finish_date!=""),]
 	rm$finish_date = str_trim(gsub("[0-9]+:[0-9]+","", rm$finish_date))
 	rm$date = as.Date(rm$finish_date, "%m/%d/%y")
-rm$dataset= "workorder"
-st$dataset= "streettree"
-df = rbind.fill(st, rm)
-df = subset(df, 
+	rm$dataset= "workorder"
+	st$dataset= "streettree"
+	df = rbind.fill(st, rm)
+	df = subset(df, 
 			select=c
 				(
 				 "census_block", 
@@ -70,19 +70,42 @@ df = subset(df,
 			)
 df$date = as.Date(df$date)
 df = df[order(df$date),]
-ddply(idata.frame(df), .(census_block), nrow)
-#############
+df$id = paste("tree", 1:nrow(df), sep="")
+df$species[which(df$species=="")] <- NA
+dfcb = df[which(df$census_block=="50291034003"), ]
+out = ddply(df, .(census_block, dataset), nrow)
+
+############
 plyfcn = function(dfcb){
-	for(i in 1:nrow(dfcb)){
-		if(!is.na(df$species[i])){
-			dfcb$species[i] = dfcb$species[i]
-		} else {
-			potential_species = table(dfcb$species[which(dfcb$dataset!="workorder")])[1:i]
-
-
+	spec.names = unique(dfcb$species)
+	spec.names = spec.names[!is.na(spec.names)]
+	spec.n = length(spec.names)
+	spec = vector("list", spec.n)
+	names(spec) = spec.names
+	if(length(spec) > 0){
+			for(s in 1:spec.n){
+				spec[[s]] = 0.00001
+			}
+		for(i in 1:nrow(dfcb)){
+			if(!is.na(dfcb$species[i])){
+				if (dfcb$species[i] == 0){
+					spec[[dfcb$species[i]]] <- 1
+				} else {
+				# plant the tree
+					spec[[dfcb$species[i]]] <- spec[[dfcb$species[i]]] + 1
+				}
+			} else {				
+				#prinst(paste("____________"))
+				#print(spec)
+				dfcb$species[i] = sample(names(spec), 1, prob=unlist(spec))
+				# unplant the tree
+				if (spec[[dfcb$species[i]]]>1){
+					spec[[dfcb$species[i]]] <- spec[[dfcb$species[i]]] - 1
+				}
+			}
+			#fuck you
 		}
-
 	}
+	 return(dfcb)
 }
-
-ddply(idata.frame(df), .(census_block), plyfcn)
+out = ddply(df, .(census_block), plyfcn, .progress="text")

@@ -20,15 +20,15 @@ names(street.trees) <- c(
     'contract',
     'boro',
     'contract.number',
-    'work.order.id',
+    'work_order_id',
     'location',
     'species',
     'census',
-    'young.tree',
-    'tree.adopt',
-    'tree.id',
-    'join.field',
-    'join.field2',
+    'young_tree',
+    'tree_adopt',
+    'tree_id',
+    'join_field',
+    'join_field2',
     'x_lon',
     'y_lat'
 )
@@ -40,8 +40,9 @@ street.trees <- subset(street.trees, select = c(
     'boro',
     'species',
     'census',
-    'young.tree',
-    'tree.id',
+    'young_tree',
+    'tree_id',
+    'work_order_id',
     'x_lon',
     'y_lat'
     ))
@@ -66,10 +67,10 @@ work.orders <- subset(work.orders, WOCATEGORY == 'TREEREMV' & STATUS %in% c("CLO
     'Text8'
     ))
 names(work.orders) <- c(
-    'work.order.id',
+    'work_order_id',
     'x',
     'y',
-    'finish.date',
+    'finish_date',
     'status',
     'species2'
     )
