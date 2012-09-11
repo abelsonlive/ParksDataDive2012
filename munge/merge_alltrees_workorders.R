@@ -44,11 +44,11 @@ street.trees <- subset(street.trees, select = c(
     'y'
     ))
 
-street.trees$boro[street.trees$boro==1] <- "Manhattan"
-street.trees$boro[street.trees$boro==2] <- "Bronx"
-street.trees$boro[street.trees$boro==3] <- "Brooklyn"
-street.trees$boro[street.trees$boro==4] <- "Queens"
-street.trees$boro[street.trees$boro==5] <- "Staten Island"
+street.trees$boro[street.trees$boro==1] <- "manhattan"
+street.trees$boro[street.trees$boro==2] <- "bronx"
+street.trees$boro[street.trees$boro==3] <- "brooklyn"
+street.trees$boro[street.trees$boro==4] <- "queens"
+street.trees$boro[street.trees$boro==5] <- "staten_island"
 street.trees$boro <- factor(street.trees$boro)
 
 work.orders <- read.csv("/data/datakind/forms/WorkOrders_NamesCleaned.csv")
