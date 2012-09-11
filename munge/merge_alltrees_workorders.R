@@ -9,7 +9,9 @@ library(maps)
 rm(list=ls())
 
 # Load data from Street Trees Census
-street.trees <- read.csv("/data/datakind/Alltrees_20120606.csv")
+street.trees <- read.csv("~/Dropbox/GitRepository/ParksDataDive2012/Alltrees_20120606.csv", 
+                         header=TRUE,
+                         stringsAsFactors=FALSE)
 names(street.trees) <- c(
     'side',
     'address',
@@ -18,17 +20,17 @@ names(street.trees) <- c(
     'contract',
     'boro',
     'contract.number',
-    'work.order.id',
+    'work_order_id',
     'location',
     'species',
     'census',
-    'young.tree',
-    'tree.adopt',
-    'tree.id',
-    'join.field',
-    'join.field2',
-    'x',
-    'y'
+    'young_tree',
+    'tree_adopt',
+    'tree_id',
+    'join_field',
+    'join_field2',
+    'x_lon',
+    'y_lat'
 )
 
 street.trees <- subset(street.trees, select = c(
@@ -38,10 +40,11 @@ street.trees <- subset(street.trees, select = c(
     'boro',
     'species',
     'census',
-    'young.tree',
-    'tree.id',
-    'x',
-    'y'
+    'young_tree',
+    'tree_id',
+    'work_order_id',
+    'x_lon',
+    'y_lat'
     ))
 
 street.trees$boro[street.trees$boro==1] <- "manhattan"
@@ -50,8 +53,10 @@ street.trees$boro[street.trees$boro==3] <- "brooklyn"
 street.trees$boro[street.trees$boro==4] <- "queens"
 street.trees$boro[street.trees$boro==5] <- "staten_island"
 street.trees$boro <- factor(street.trees$boro)
-
-work.orders <- read.csv("/data/datakind/forms/WorkOrders_NamesCleaned.csv")
+write.csv(street.trees, "~/Dropbox/GitRepository/ParksDataDive2012/Street_Trees.csv", na="", row.names=F)
+head(street.trees)
+# removals
+work.orders <- read.csv("~/Dropbox/GitRepository/ParksDataDive2012/WorkOrders_NamesCleaned.csv")
 work.orders <- subset(work.orders, WOCATEGORY == 'TREEREMV' & STATUS %in% c("CLOSED", "COMPLETE"), 
                       select = c(
     'WORKORDERID',
@@ -62,18 +67,12 @@ work.orders <- subset(work.orders, WOCATEGORY == 'TREEREMV' & STATUS %in% c("CLO
     'Text8'
     ))
 names(work.orders) <- c(
-    'work.order.id',
+    'work_order_id',
     'x',
     'y',
-    'finish.date',
+    'finish_date',
     'status',
-    'species'
+    'species2'
     )
 
-
-work.orders$dataset = "workorders"
-street.trees$dataset = "streettrees"
-
-
-combined <- rbind.fill(work.orders, street.trees)
-write.csv(combined, file='/data/datakind/StreetTrees_WorkOrders.csv', na="", row.names=FALSE)
+write.csv(work.orders, file='~/Dropbox/GitRepository/ParksDataDive2012/WorkOrders.csv', na="", row.names=FALSE)
