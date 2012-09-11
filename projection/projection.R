@@ -18,7 +18,6 @@ code.names <- read.csv("data/Species code listing_with Common Names.csv")
 recipe <- merge(subset(code.names, select=c('Species', 'Species.Code')), recipe, by.x="Species", by.y="tree_name")
 
 # Load data from Street Trees Census
-# street.trees <- read.csv("~/Dropbox/Street Tree Inventory (NYC Parks DataDive)/Alltrees_20120606.csv")
 street.trees <- read.csv("../streettrees_export.csv", stringsAsFactors=FALSE, nrows=100000)
 
 # extract lat/lon from the_geom field
@@ -32,9 +31,7 @@ street.trees <- subset(street.trees, select = c(
     'season',
     'boro',
     'species',
-    'census_tract',
-    'lon',
-    'lat'
+    'census_tract'
 ))
 
 # clean up the boroughs. 
@@ -75,8 +72,6 @@ st <- street.trees
 st$lat <- st$lon <- NULL
 st$season.dt <- as.character(st$season.dt)
 
-# st$lon <- round(st$lon, 2)
-# st$lat <- round(st$lat, 2)
 st$species <- as.character(st$species)
 
 
@@ -103,8 +98,6 @@ for(season in future.seasons) {
                        census_tract=rep(xin$census_tract[1], trees_to_plant),
                        boro=rep(xin$boro[1], trees_to_plant),
                        species = sample(as.character(tree.dist$species), trees_to_plant, tree.dist[,boro], replace=TRUE)
-#                        lon=rep(xin$lon[1], trees_to_plant),
-#                        lat=rep(xin$lat[1], trees_to_plant)
                    )
                    ret$species <- as.character(ret$species)
                    ret
@@ -117,16 +110,7 @@ for(season in future.seasons) {
 st$season.dt <- as.Date(st$season.dt)
 
 
-## ENTERING THE TOTAL HACK ZONE
-# grabxy <- function(data, xpoint, ypoint, range=1000){
-#     data <- subset(data, lon > (xpoint-range/2) & lon < (xpoint+range/2) & lat > (ypoint-range/2) & lat < (ypoint+range/2))
-#     data
-# }
-# d <- grabxy(st, lon, lat, range=.05)
-
-
 census.tract <- 15100
-
 d <- subset(st, census_tract==census.tract)
 
 d$season <- as.Date(d$season.dt)
@@ -135,11 +119,17 @@ d3 <- ddply(idata.frame(d2), .(species), function(x) {data.frame(season=x$season
 d3$species <- factor(d3$species)
 d3$season <- as.Date(as.character(d3$season))
 
-# if the latest date isn't in there, add it
+# get the trees that have been planted the most. This is a bit ugly but it works.
+most.planted <- ddply(d3, .(species), summarize, planted=max(tot.trees)-min(tot.trees), tot.trees=max(tot.trees))
+most.planted <- head(most.planted[order(-most.planted$planted, -most.planted$tot.trees),], 10)$species
+d3 <- ddply(d3, .(species), transform, show.in.plot=(max(season)>="2010-01-01" | species[1] %in% most.planted))
+
+## if the latest date isn't in there, add it.
+d3 <- subset(d3, show.in.plot)
 max.date <- max(d3$season)
 for (species in unique(d3$species)){
-    if (d3$season < max.date){
-        d3 <- rbind(
+    if (max(d3$season[d3$species==species]) < max.date){
+        d3 <- rbind.fill(
             d3, 
             data.frame(
                 species=species,
@@ -149,11 +139,11 @@ for (species in unique(d3$species)){
         )
     }
 }
-
-ggplot(d3, aes(x=season, y=tot.trees)) + geom_point(alpha=.4) + geom_line(aes(group=species), alpha=.4) +
-    opts(title=paste("Tree Species In Census Block", census.tract)) + 
+ggplot(d3, aes(x=season, y=tot.trees, color=species)) + geom_point(alpha=.4) + geom_line() +
+    opts(title=paste("Most Planted Species In Census Block", census.tract)) + 
     scale_y_continuous("Total Trees") +
     scale_x_date("Date")
+
 qplot(species, data=subset(d, season>'2005-06-01' & species %in% names(summary(factor(d$species)))[1:100]), fill=factor(season)) + 
     opts(title="Tree Plantings") +
     scale_x_discrete('Species Code') +
