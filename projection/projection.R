@@ -18,7 +18,7 @@ code.names <- read.csv("data/Species code listing_with Common Names.csv")
 recipe <- merge(subset(code.names, select=c('Species', 'Species.Code')), recipe, by.x="Species", by.y="tree_name")
 
 # Load data from Street Trees Census
-street.trees <- read.csv("../streettrees_export.csv", stringsAsFactors=FALSE, nrows=100000)
+street.trees <- read.csv("../streettrees_export.csv", stringsAsFactors=FALSE)
 
 # extract lat/lon from the_geom field
 street.trees$lon <- as.numeric(gsub("^[^0-9-]+([-0-9\\.]+),.+", "\\1", street.trees$the_geom))
