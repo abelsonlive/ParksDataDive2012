@@ -20,10 +20,10 @@ recipe <- merge(subset(code.names, select=c('Species', 'Species.Code')), recipe,
 # Load data from Street Trees Census
 street.trees <- read.csv("../streettrees_export.csv", stringsAsFactors=FALSE)
 
-# extract lat/lon from the_geom field
-street.trees$lon <- as.numeric(gsub("^[^0-9-]+([-0-9\\.]+),.+", "\\1", street.trees$the_geom))
-street.trees$lat <- as.numeric(gsub("^.+coordinates[^,]+,([-0-9\\.]+)\\].+", "\\1", street.trees$the_geom))
-street.trees <- subset(street.trees, lat > 0) # outliers
+## extract lat/lon from the_geom field (not needed anymore, but useful to have around)
+# street.trees$lon <- as.numeric(gsub("^[^0-9-]+([-0-9\\.]+),.+", "\\1", street.trees$the_geom))
+# street.trees$lat <- as.numeric(gsub("^.+coordinates[^,]+,([-0-9\\.]+)\\].+", "\\1", street.trees$the_geom))
+# street.trees <- subset(street.trees, lat > 0) # outliers
 
 
 street.trees <- subset(street.trees, select = c(
@@ -140,7 +140,7 @@ for (species in unique(d3$species)){
     }
 }
 ggplot(d3, aes(x=season, y=tot.trees, color=species)) + geom_point(alpha=.4) + geom_line() +
-    opts(title=paste("Most Planted Species In Census Block", census.tract)) + 
+    opts(title=paste("Most Planted Species In Census Tract", census.tract)) + 
     scale_y_continuous("Total Trees") +
     scale_x_date("Date")
 
