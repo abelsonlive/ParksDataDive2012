@@ -37,6 +37,7 @@ setwd("~/Dropbox/GitRepository/ParksDataDive2012/")
 		)
 	mergedf = data.frame(season, date, stringsAsFactors=F)
 	st = join(mergedf, st, type="right", by="season")
+	st$dataset= "streettree"
 
 # clean up removals
 	rm = read.csv("workorders_export.csv", stringsAsFactors=F)
@@ -56,7 +57,8 @@ setwd("~/Dropbox/GitRepository/ParksDataDive2012/")
 	rm$finish_date = str_trim(gsub("[0-9]+:[0-9]+","", rm$finish_date))
 	rm$date = as.Date(rm$finish_date, "%m/%d/%y")
 	rm$dataset= "workorder"
-	st$dataset= "streettree"
+
+# merge datasets	
 	df = rbind.fill(st, rm)
 	df = subset(df, 
 			select=c
@@ -72,15 +74,13 @@ df$date = as.Date(df$date)
 df = df[order(df$date),]
 df$id = paste("tree", 1:nrow(df), sep="")
 df$species[which(df$species=="")] <- NA
-dfcb = df[which(df$census_block=="50291034003"), ]
-out = ddply(df, .(census_block, dataset), nrow)
 
-############
+# SAMPLE SPECIES FROM DISTRIBUTION #
 plyfcn = function(dfcb){
 	spec.names = unique(dfcb$species)
 	spec.names = spec.names[!is.na(spec.names)]
-	spec.n = length(spec.names)
-	spec = vector("list", spec.n)
+	n.spec = length(spec.names)
+	spec = vector("list", n.spec)
 	names(spec) = spec.names
 	if(length(spec) > 0){
 			for(s in 1:spec.n){
@@ -95,17 +95,14 @@ plyfcn = function(dfcb){
 					spec[[dfcb$species[i]]] <- spec[[dfcb$species[i]]] + 1
 				}
 			} else {				
-				#prinst(paste("____________"))
-				#print(spec)
-				dfcb$species[i] = sample(names(spec), 1, prob=unlist(spec))
+				dfcb$species[i] = sample(names(spec), 1, prob = unlist(spec))
 				# unplant the tree
-				if (spec[[dfcb$species[i]]]>1){
+				if (spec[[dfcb$species[i]]] > 1){
 					spec[[dfcb$species[i]]] <- spec[[dfcb$species[i]]] - 1
 				}
 			}
-			#fuck you
 		}
 	}
-	 return(dfcb)
+return(dfcb)
 }
 out = ddply(df, .(census_block), plyfcn, .progress="text")
