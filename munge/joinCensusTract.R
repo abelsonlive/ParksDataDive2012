@@ -7,9 +7,9 @@ library("SpatialEpi")
 library("plyr")
 shape = read.dbf("/Users/brian/Dropbox/GitRepository/ParksDataDive2012/nyct2010_12b_av/nyct2010.dbf")
 risk = read.dbf("/Users/brian/Downloads/storm_risk_index (1)/storm_risk_index_export.dbf")
-head(shape)
+
 risk = read.csv("/Users/brian/Downloads/index.csv")
-head(risk)
+
 for(i in 1:nrow(risk)){
 	if(nchar(risk$ct_6_string[i])==3){
 		risk$ct_6_string[i] = paste("000",risk$ct_6_string[i],sep="")
